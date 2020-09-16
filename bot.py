@@ -18,21 +18,21 @@ async def on_ready():
 
 
 @client.command()
-@commands.has_role("Admin-Bot")
+# @commands.has_role("Admin-Bot")
 async def load(ctx, extension):
     "Carga de un nuevo fichero de comandos"
     client.load_extension(f'commands.{extension}')
 
 
 @client.command()
-@commands.has_role("Admin-Bot")
+# @commands.has_role("Admin-Bot")
 async def unload(ctx, extension):
     "Eliminación de un fichero de comandos"
     client.unload_extension(f'commands.{extension}')
 
 
 @client.command()
-@commands.has_role("Admin-Bot")
+# @commands.has_role("Admin-Bot")
 async def reload(ctx, extension):
     "Actulización de un nuevo fichero de comandos"
     client.unload_extension(f'commands.{extension}')
