@@ -56,5 +56,7 @@ class VoiceCommands(commands.Cog):
     async def leave(self, ctx):
         server = ctx.message.guild.voice_client
         await server.disconnect()
+
+
 def setup(client):
     client.add_cog(VoiceCommands(client))
