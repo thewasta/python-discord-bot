@@ -1,8 +1,6 @@
-import discord
 from discord.ext import commands
 from utils.Functions import find_solo_tier, percent_wins, player_level, player_elo, get_profile_details_for_embed, \
     find_flex_tier, get_player_queue_details_for_embed
-
 
 class LoLRanking(commands.Cog):
     def __init__(self, client):
