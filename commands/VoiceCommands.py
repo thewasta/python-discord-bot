@@ -1,5 +1,4 @@
 import os
-import sys
 import time
 
 import discord
@@ -21,7 +20,8 @@ class VoiceCommands(commands.Cog):
                 print("Error conectado el bot al canal de voz")
                 pass
             try:
-                assets = os.path.dirname(sys.modules['__main__'].__file__) + "/assets/"
+                assets = os.getcwd() + "\\assets"
+                print(assets)
                 source = FFmpegPCMAudio(source=assets + r'tula5.mp3')
                 player = vc.play(source)
             except discord.ClientException:
@@ -35,7 +35,7 @@ class VoiceCommands(commands.Cog):
 
     @commands.command()
     async def prueba(self, ctx):
-        assets = os.path.dirname(sys.modules['__main__'].__file__) + "/assets"
+        assets = os.getcwd() + "\\assets"
         print(assets)
 
     @commands.command()
