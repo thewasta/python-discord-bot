@@ -1,11 +1,13 @@
 import discord
 from discord.ext import commands
-from utils.Functions import find_solo_tier, percent_wins, player_level, player_elo, get_profile_details_for_embed, \
-    find_flex_tier, get_player_queue_details_for_embed
+from utils.LoLRankingUtils import player_level, get_profile_details_for_embed, get_player_queue_details_for_embed, \
+    get_string_match_embed
+
+league_graph_url = "https://www.leagueofgraphs.com/match/euw/"
 
 
 class LoLRanking(commands.Cog):
-    def __init__(self, client):
+    def __init__(self, client: discord.Client):
         self.client = client
 
     @commands.command()
@@ -45,20 +47,20 @@ class LoLRanking(commands.Cog):
         if args is None:
             await ctx.send('Debes incluir el nombre de invocador sin espacios !elosolo tmsthewasta')
             return
-
         player_info_level = player_level(args)
         profile_champs_details = get_profile_details_for_embed(args)
         profile_stats_details = get_player_queue_details_for_embed(args)
-        last_games = "Last Games"
+        last_games = get_string_match_embed(args, 5)
+        print(last_games)
         embed = discord.Embed(
-            title="Perfil de {}: Nivel {}".format(profile_stats_details[1], player_info_level),
+            title="Perfil de {}: Nivel {} ".format(profile_stats_details[1], player_info_level),
             colour=discord.Colour.dark_green()
         )
         embed.add_field(name="Mejores campeones", value=profile_champs_details, inline=True)
         embed.add_field(name="Estadísticas Clasificatorias", value=profile_stats_details[0],
                         inline=True)
         embed.add_field(name="Últimas partidas", value=last_games, inline=False)
-
+        print('send message')
         await ctx.send(embed=embed)
 
     @commands.command(name="eloflex", aliases=["flexq"])
@@ -70,6 +72,15 @@ class LoLRanking(commands.Cog):
             escríbelo separado de un espacio, ejemplo: !elosolo tmsthewasta na
             """
         print('a')
+
+    @commands.command()
+    async def testembed(self, ctx):
+        embed = discord.Embed(
+            title="test",
+            colour=discord.Colour.dark_green()
+        )
+        embed.add_field(name='Aqioe', value="[Text](https://yoururl.com/ 'Text will appear if you hover here')")
+        await ctx.send(embed=embed)
 
 
 def setup(client):

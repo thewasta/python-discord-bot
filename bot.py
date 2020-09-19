@@ -1,14 +1,14 @@
 import discord
 import os
 from discord.ext import commands
-from dotenv import load_dotenv
-
-load_dotenv()
+import sentry_sdk
 
 client = commands.Bot(command_prefix="!")
 
-
-# client.remove_command('help')
+sentry_sdk.init(
+    os.getenv("SENTRY"),
+    traces_sample_rate=1.0
+)
 
 
 @client.event

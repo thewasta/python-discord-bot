@@ -1,7 +1,7 @@
 import re
 
 
-def get_champion_emoji_id(champ):
+def get_champion_emoji_by_name(champ):
     file = open('./source/emojis_id.txt')
     for emoji in file:
         if re.search(champ, emoji):
