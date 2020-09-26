@@ -1,6 +1,6 @@
 import os
 import time
-
+import sentry_sdk
 import discord
 from discord import FFmpegPCMAudio
 from discord.ext import commands
@@ -13,11 +13,10 @@ class VoiceCommands(commands.Cog):
     @commands.Cog.listener()
     async def on_voice_state_update(self, member, before, after):
         if before.channel is None and after.channel is not None and member.bot == False:
-            print("entra")
             try:
                 vc = await after.channel.connect()
             except discord.ClientException:
-                print("Error conectado el bot al canal de voz")
+                sentry_sdk.capture_exception(Exception("Error conectado el bot al canal de voz"))
                 pass
             try:
                 assets = os.getcwd() + "\\assets"
@@ -25,7 +24,7 @@ class VoiceCommands(commands.Cog):
                 source = FFmpegPCMAudio(source=assets + r'tula5.mp3')
                 player = vc.play(source)
             except discord.ClientException:
-                print("Error reproduciendo el audio")
+                sentry_sdk.capture_exception(error=Exception("Error reproduciendo el audio"))
                 pass
             esta_reproduciendo = vc.is_playing()
             time.sleep(1)

@@ -16,7 +16,7 @@ def get_profile_details_for_embed(username):
             "points": champions['championPoints'],
         })
     top_champ_list = []
-    with open('./source/data/es_ES/champion.json') as json_file:
+    with open('./assets/data/es_ES/champion.json') as json_file:
         for name, info in json.load(json_file)['data'].items():
             for best_champ in best_champs_info:
                 if info['key'] == str(best_champ['id']):
@@ -31,7 +31,7 @@ def get_profile_details_for_embed(username):
 
 
 def get_champion_name(champion_id: str) -> str:
-    with open('./source/data/es_ES/champion.json') as json_file:
+    with open('./assets/data/es_ES/champion.json') as json_file:
         for name, info in json.load(json_file)['data'].items():
             if info['key'] == str(champion_id):
                 return name
@@ -72,16 +72,17 @@ def get_string_match_embed(user_name, end_index):
     match_list_details = get_list_match_details(user_name, match_list)
     final_text = ''
     for match_details in match_list_details:
-        print(match_details['champion'])
-        print(get_champion_name(match_details['champion']))
         champ_emoji = get_champion_emoji_by_name(get_champion_name(match_details['champion']))
         kda_result = "{}/{}/{}".format(match_details['kills'], match_details['deaths'], match_details['assists'])
-        final_text += """{} {} {match_result} [LeagueGraph]({link_match} 'Datos de la partida')\n""".format(champ_emoji,
-                                                                                                            kda_result,
-                                                                                                            match_result="<:victory:755862932541407302>" if
-                                                                                                            match_details[
-                                                                                                                'win'] else "<:defeat:755862932461584415>",
-                                                                                                            link_match=league_graph_url + f"{match_details['gameId']}")
+        final_text += """{MODE}{} {} {match_result} [LeagueGraph]({link_match} 'Datos de la partida') {lane}\n""".format(
+            champ_emoji,
+            kda_result,
+            match_result="<:victory:755862932541407302>" if
+            match_details[
+                'win'] else "<:defeat:755862932461584415>",
+            link_match=league_graph_url + f"{match_details['gameId']}",
+            lane=match_details['lane'],
+            MODE=match_details['mode'])
     return final_text
 
 
@@ -89,9 +90,21 @@ def get_matches_list(user_name, end_index):
     match_list = get_player_match_list(user_name, end_index)
     list_match = []
     for match in match_list:
+        game_mode: str = "NORMAL"
+        if match['queue'] == 440:
+            game_mode = "FLEXQ"
+        if match['queue'] == 450:
+            game_mode = "ARAM"
+        if match['queue'] == 1020:
+            game_mode = "SPECIAL"
+        if match['queue'] == 420:
+            game_mode = "SOLOQ"
+
         list_match.append({
             "gameId": match['gameId'],
-            "champion": match['champion']
+            "champion": match['champion'],
+            "lane": match['lane'],
+            "type": game_mode
         })
 
     return list_match
@@ -111,9 +124,11 @@ def get_list_match_details(user_name, match_id_list):
                     "win": participant['stats']['win'],
                     "kills": participant['stats']['kills'],
                     "deaths": participant['stats']['deaths'],
-                    "assists": participant['stats']['assists']
+                    "assists": participant['stats']['assists'],
+                    "lane": match['lane'],
+                    "mode": match['type']
                 })
-            break
+                break
 
     return result
 
@@ -128,9 +143,14 @@ def player_level(user_name):
     return api.get_summoner_data()['summonerLevel']
 
 
-def get_player_match_list(user_name, end_index):
+def currently_in_game(user_name) -> str:
     api = ApiRequest(user_name)
-    return api.get_match_list(end_index)
+    return api.is_in_game()
+
+
+def get_player_match_list(user_name, end_index, champion=None, queue=None):
+    api = ApiRequest(user_name)
+    return api.get_match_list(end_index, champion, queue)
 
 
 def find_solo_tier(tier_list):

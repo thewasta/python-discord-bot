@@ -2,13 +2,17 @@ import discord
 import os
 from discord.ext import commands
 import sentry_sdk
+from dotenv import load_dotenv
 
-client = commands.Bot(command_prefix="!")
+load_dotenv()
+client = commands.Bot(command_prefix="!", description="""Lista de comandos que pueden ser utilzados en este servidor
+ten en cuenta que para el uso de algún comando necesitarás tener 
+X rol/permiso, si el comando lo necesita este te lo dirá.
+Saludos y no me rompas el bot JoseLuis.""")
 
 sentry_sdk.init(
     os.getenv("SENTRY"),
-    traces_sample_rate=1.0
-)
+    traces_sample_rate=1.0)
 
 
 @client.event
@@ -18,21 +22,21 @@ async def on_ready():
 
 
 @client.command()
-# @commands.has_role("Admin-Bot")
+@commands.has_role("Admin-Bot")
 async def load(ctx, extension):
     "Carga de un nuevo fichero de comandos"
     client.load_extension(f'commands.{extension}')
 
 
 @client.command()
-# @commands.has_role("Admin-Bot")
+@commands.has_role("Admin-Bot")
 async def unload(ctx, extension):
     "Eliminación de un fichero de comandos"
     client.unload_extension(f'commands.{extension}')
 
 
 @client.command()
-# @commands.has_role("Admin-Bot")
+@commands.has_role("Admin-Bot")
 async def reload(ctx, extension):
     "Actulización de un nuevo fichero de comandos"
     client.unload_extension(f'commands.{extension}')
